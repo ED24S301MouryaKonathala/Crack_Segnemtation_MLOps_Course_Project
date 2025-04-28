@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+    networks:
+      - efficientad-net
+    depends_on:
+      - mlflow
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8500:8500"
+    networks:
+      - efficientad-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - efficientad-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - efficientad-net
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    networks:
+      - efficientad-net
+
+networks:
+  efficientad-net:
+    driver: bridge
