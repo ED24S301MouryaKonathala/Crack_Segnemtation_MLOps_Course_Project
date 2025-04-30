@@ -25,8 +25,8 @@ User → Streamlit UI (8500) → FastAPI Backend (8000) → Crack Detection & Fe
 
 ### Step 1: Clone Repository
 ```bash
-git clone <your-repository-url>
-cd efficientad-mlops
+git clone https://github.com/ED24S301MouryaKonathala/Crack_Segnemtation_MLOps_Course_Project.git
+cd Crack_Segnemtation_MLOps_Course_Project
 ```
 
 ### Step 2: Install DVC
