@@ -10,7 +10,9 @@ An end-to-end MLOps system for crack detection using a PyTorch Attention U-Net m
 - Prometheus and Grafana for monitoring
 - Full Docker Compose orchestration
 
-Runs fully **locally** — no external cloud services required.
+
+![Architecture](architecture.svg)
+
 
 ## 2. Architecture Diagram
 ```
