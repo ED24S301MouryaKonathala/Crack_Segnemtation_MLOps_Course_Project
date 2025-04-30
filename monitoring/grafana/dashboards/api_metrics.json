@@ -1,0 +1,122 @@
+{
+  "uid": "api-metrics",
+  "title": "API Metrics Dashboard",
+  "timezone": "browser",
+  "schemaVersion": 40,
+  "version": 1,
+  "refresh": "5s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total Requests",
+      "id": 1,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(http_requests_total)",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4}
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Rate by Endpoint",
+      "id": 2,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{handler!=\"/metrics\"}[5m])",
+          "refId": "A",
+          "legendFormat": "{{handler}}"
+        }
+      ],
+      "gridPos": {"x": 6, "y": 0, "w": 18, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Response Times",
+      "id": 3,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])",
+          "refId": "A",
+          "legendFormat": "{{handler}}"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Error Rate",
+      "id": 4,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{status=~\"5.*\"}[5m])) / sum(rate(http_requests_total[5m]))",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8}
+    },
+    {
+      "type": "gauge",
+      "title": "Prediction Success Rate",
+      "id": 5,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{handler=\"/predict\",status=\"200\"}[5m])) / sum(rate(http_requests_total{handler=\"/predict\"}[5m])) * 100",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 16, "w": 8, "h": 8},
+      "options": {
+        "maxValue": 100,
+        "minValue": 0,
+        "unit": "percent"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Duration by Percentile",
+      "id": 6,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+          "refId": "A",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+          "refId": "B",
+          "legendFormat": "p50"
+        }
+      ],
+      "gridPos": {"x": 8, "y": 16, "w": 8, "h": 8},
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "unit": "s"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Active Requests",
+      "id": 7,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_in_progress[5m]))",
+          "refId": "A",
+          "legendFormat": "Active Requests"
+        }
+      ],
+      "gridPos": {"x": 16, "y": 16, "w": 8, "h": 8}
+    }
+  ]
+}

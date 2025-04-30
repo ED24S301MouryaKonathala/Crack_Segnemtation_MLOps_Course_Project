@@ -1,0 +1,134 @@
+{
+  "uid": "system-metrics",
+  "title": "System Metrics Dashboard",
+  "timezone": "browser",
+  "schemaVersion": 40,
+  "version": 1,
+  "refresh": "5s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "System Health Score",
+      "id": 1,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg(up{job=~\"fastapi|prometheus|grafana\"})",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4}
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage by Core",
+      "id": 2,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(node_cpu_seconds_total{mode!=\"idle\"}[1m])",
+          "refId": "A",
+          "legendFormat": "{{cpu}}"
+        }
+      ],
+      "gridPos": {"x": 6, "y": 0, "w": 18, "h": 8}
+    },
+    {
+      "type": "gauge",
+      "title": "Memory Usage",
+      "id": 3,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "100 - ((node_memory_MemAvailable_bytes * 100) / node_memory_MemTotal_bytes)",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 8, "w": 6, "h": 6},
+      "options": {
+        "maxValue": 100,
+        "minValue": 0,
+        "unit": "percent"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Disk IO",
+      "id": 4,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(node_disk_read_bytes_total[5m])",
+          "refId": "A",
+          "legendFormat": "Read"
+        },
+        {
+          "expr": "rate(node_disk_written_bytes_total[5m])",
+          "refId": "B",
+          "legendFormat": "Write"
+        }
+      ],
+      "gridPos": {"x": 6, "y": 8, "w": 18, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Network Traffic",
+      "id": 5,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total[5m])",
+          "refId": "A",
+          "legendFormat": "Receive"
+        },
+        {
+          "expr": "rate(node_network_transmit_bytes_total[5m])",
+          "refId": "B",
+          "legendFormat": "Transmit"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "API Request Rate",
+      "id": 6,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[5m])",
+          "refId": "A",
+          "legendFormat": "{{endpoint}}"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 24, "w": 12, "h": 8},
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries", 
+      "title": "API Request Duration",
+      "id": 7,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])",
+          "refId": "A",
+          "legendFormat": "{{endpoint}}"
+        }
+      ],
+      "gridPos": {"x": 12, "y": 24, "w": 12, "h": 8},
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "unit": "s"
+      }
+    }
+  ]
+}

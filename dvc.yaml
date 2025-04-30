@@ -1,8 +1,12 @@
+# Update dvc.yaml to include data preprocessing:
 stages:
   train:
     cmd: python src/train.py
     deps:
-      - src/train.py
-      - data/
+    - src/train.py
     outs:
-      - models/efficientad_model.pth
+    - models/attention_unet.pth
+    metrics:
+    - metrics.json
+    params:
+    - params.yaml:train

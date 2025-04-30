@@ -1,0 +1,12 @@
+train:
+  epochs: 10
+  batch_size: 128
+  learning_rate: 0.0001
+  model_architecture: Attention-UNet
+  image_size: 128
+  optimizer: Adam
+  loss_function: BCEWithLogitsLoss
+
+dvc:
+  data_dir: model_retrain_data
+  remote: remote

@@ -1,3 +1,15 @@
-batch_size: 32
-epochs: 10
-learning_rate: 0.001
+train:
+  epochs: 60
+  batch_size: 128
+  learning_rate: 0.0001
+  model_architecture: Attention-UNet
+  image_size: 128
+  optimizer: Adam
+  loss_function: BCEWithLogitsLoss
+dataset:
+  train_images_dir: data/train/images
+  train_masks_dir: data/train/masks
+  test_images_dir: data/test/images
+  test_masks_dir: data/test/masks
+  val_split: 0.1
+  augmentations: true

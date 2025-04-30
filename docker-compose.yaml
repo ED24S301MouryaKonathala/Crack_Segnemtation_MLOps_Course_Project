@@ -1,56 +1,59 @@
-version: "3.8"
+version: '3.8'
 
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "8500:8500"  # Keep original port
+    volumes:
+      - ./frontend/app:/app/app
+      - ./frontend/app/static:/app/static
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - STREAMLIT_SERVER_PORT=8500  # Set Streamlit port
+    command: streamlit run --server.port 8500 app/streamlit_app.py
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
   backend:
     build: ./backend
-    container_name: backend
     ports:
       - "8000:8000"
     volumes:
+      - ./model_retrain:/app/model_retrain  # Maps container path to local path
       - ./models:/app/models
+      - ./logs:/app/logs
+      - ./mlruns:/app/mlruns
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     networks:
-      - efficientad-net
-    depends_on:
-      - mlflow
-
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    ports:
-      - "8500:8500"
-    networks:
-      - efficientad-net
+      - app-network
 
   prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
+    image: prom/prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - efficientad-net
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
 
   grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
+    image: grafana/grafana
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana_data:/var/lib/grafana
     ports:
-      - "3001:3000"
-    networks:
-      - efficientad-net
+      - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
-
-  mlflow:
-    image: ghcr.io/mlflow/mlflow:latest
-    container_name: mlflow
-    ports:
-      - "5000:5000"
-    environment:
-      - MLFLOW_TRACKING_URI=http://mlflow:5000
-    networks:
-      - efficientad-net
+      - GF_SECURITY_ADMIN_USER=admin
 
 networks:
-  efficientad-net:
+  app-network:
     driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
